@@ -26,5 +26,8 @@ public enum HandType {
     HIGH_CARD(1);
 
     final int value;
-    HandType(int value) { this.value = value; }
+
+    HandType(int value) {
+        this.value = value;
+    }
 }

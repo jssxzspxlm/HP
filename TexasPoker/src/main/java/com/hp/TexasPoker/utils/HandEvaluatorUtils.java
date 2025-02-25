@@ -12,7 +12,6 @@ public class HandEvaluatorUtils {
                 new Card(Rank.ACE, Suit.CLUBS),
                 new Card(Rank.ACE, Suit.CLUBS),
                 new Card(Rank.TEN, Suit.CLUBS));
-
         List<Card> hand2 = Arrays.asList(
                 new Card(Rank.TEN, Suit.CLUBS),
                 new Card(Rank.TEN, Suit.CLUBS),
@@ -20,6 +19,15 @@ public class HandEvaluatorUtils {
                 new Card(Rank.NINE, Suit.CLUBS),
                 new Card(Rank.TEN, Suit.CLUBS));
         System.out.println(compareHands(hand1, hand2));
+        List<Card> handAll = Arrays.asList(
+                new Card(Rank.TEN, Suit.DIAMONDS),
+                new Card(Rank.FIVE, Suit.DIAMONDS),
+                new Card(Rank.SIX, Suit.DIAMONDS),
+                new Card(Rank.EIGHT, Suit.SPADES),
+                new Card(Rank.SEVEN, Suit.CLUBS),
+                new Card(Rank.NINE, Suit.DIAMONDS),
+                new Card(Rank.NINE, Suit.SPADES));
+        System.out.println(getBestHand(handAll));
     }
 
     // 找到最佳牌型
@@ -49,9 +57,7 @@ public class HandEvaluatorUtils {
     // 比较两手牌
     public static int compareHands(List<Card> hand1, List<Card> hand2) {
         HandStrength hs1 = evaluateHand(hand1);
-        System.out.println(hs1);
         HandStrength hs2 = evaluateHand(hand2);
-        System.out.println(hs2);
         return hs1.compareTo(hs2);
     }
 
@@ -64,7 +70,7 @@ public class HandEvaluatorUtils {
 
         // 同花顺（包括皇家同花顺）
         if (isFlush && isStraight) {
-            int royal = (straightHigh == 14) ? HandType.ROYAL_FLUSH.getValue() : HandType.STRAIGHT_FLUSH.getValue();
+            int royal = (straightHigh == Rank.ACE.getValue()) ? HandType.ROYAL_FLUSH.getValue() : HandType.STRAIGHT_FLUSH.getValue();
             return new HandStrength(royal, Collections.singletonList(straightHigh));
         }
 
@@ -88,8 +94,8 @@ public class HandEvaluatorUtils {
         // 同花
         if (isFlush) {
             List<Integer> ranks = new ArrayList<>();
-            for (Card c : cards) {
-                ranks.add(c.getValue());
+            for (Card card : cards) {
+                ranks.add(card.getValue());
             }
             return new HandStrength(HandType.FLUSH.getValue(), ranks);
         }
@@ -112,11 +118,11 @@ public class HandEvaluatorUtils {
         if (rankCount.values().stream().filter(v -> v == 2).count() == 2) {
             List<Integer> pairs = new ArrayList<>();
             List<Integer> singles = new ArrayList<>();
-            for (Card c : cards) {
-                if (rankCount.get(c.getValue()) == 2 && !pairs.contains(c.getValue())) {
-                    pairs.add(c.getValue());
-                } else if (rankCount.get(c.getValue()) == 1) {
-                    singles.add(c.getValue());
+            for (Card card : cards) {
+                if (rankCount.get(card.getValue()) == 2 && !pairs.contains(card.getValue())) {
+                    pairs.add(card.getValue());
+                } else if (rankCount.get(card.getValue()) == 1) {
+                    singles.add(card.getValue());
                 }
             }
             pairs.sort(Collections.reverseOrder());
@@ -138,7 +144,7 @@ public class HandEvaluatorUtils {
 
         // 高牌
         List<Integer> ranks = new ArrayList<>();
-        for (Card c : cards) ranks.add(c.getValue());
+        for (Card card : cards) ranks.add(card.getValue());
         ranks.sort(Collections.reverseOrder());
         return new HandStrength(HandType.HIGH_CARD.getValue(), ranks.subList(0, 5));
     }
@@ -151,35 +157,37 @@ public class HandEvaluatorUtils {
     // 是否是顺子
     private static boolean isStraight(List<Card> cards) {
         Set<Integer> ranks = new HashSet<>();
-        for (Card c : cards) {
-            ranks.add(c.getValue());
+        for (Card card : cards) {
+            ranks.add(card.getValue());
         }
 
         // 普通顺子
         if (ranks.size() == 5) {
             int max = Collections.max(ranks);
             int min = Collections.min(ranks);
-            if (max - min == 4) return true;
+            if (max - min == 4) {
+                return true;
+            }
         }
 
         // 特殊顺子A-2-3-4-5
-        return ranks.containsAll(Arrays.asList(14, 2, 3, 4, 5));
+        return ranks.containsAll(Arrays.asList(Rank.ACE.getValue(), Rank.TWO.getValue(), Rank.THREE.getValue(), Rank.FOUR.getValue(), Rank.FIVE.getValue()));
     }
 
     private static int getStraightHigh(List<Card> cards) {
         Set<Integer> ranks = new HashSet<>();
-        for (Card c : cards) ranks.add(c.getValue());
+        for (Card card : cards) ranks.add(card.getValue());
 
-        if (ranks.containsAll(Arrays.asList(14, 2, 3, 4, 5))) {
-            return 5;
+        if (ranks.containsAll(Arrays.asList(Rank.ACE.getValue(), Rank.TWO.getValue(), Rank.THREE.getValue(), Rank.FOUR.getValue(), Rank.FIVE.getValue()))) {
+            return Rank.FIVE.getValue();
         }
         return Collections.max(ranks);
     }
 
     private static Map<Integer, Integer> getRankCount(List<Card> cards) {
         Map<Integer, Integer> count = new HashMap<>();
-        for (Card c : cards) {
-            count.put(c.getValue(), count.getOrDefault(c.getValue(), 0) + 1);
+        for (Card card : cards) {
+            count.put(card.getValue(), count.getOrDefault(card.getValue(), 0) + 1);
         }
         return count;
     }

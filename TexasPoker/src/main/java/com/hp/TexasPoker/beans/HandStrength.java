@@ -26,9 +26,6 @@ public class HandStrength implements Comparable<HandStrength> {
 
     @Override
     public String toString() {
-        return "HandStrength{" +
-                "handRank=" + handRank +
-                ", kickers=" + kickers +
-                '}';
+        return "HandStrength{" + "handRank=" + handRank + ", kickers=" + kickers + '}';
     }
 }

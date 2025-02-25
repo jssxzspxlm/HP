@@ -12,6 +12,8 @@ public class Card {
         this.suit = suit;
     }
 
-    public int getValue() { return rank.value; }
+    public int getValue() {
+        return rank.value;
+    }
 
 }
